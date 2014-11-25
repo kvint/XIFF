@@ -23,38 +23,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.igniterealtime.xiff.collections
+package org.igniterealtime.xiff.data.archive
 {
-	import flash.events.IEventDispatcher;
-	
-	public interface ICollection extends IEventDispatcher
-	{
-		function get length():int;
-
-		function get source():Array;
-
-		function getItemAt( index:int ):*;
-		
-		function setItemAt( item:*, index:int ):*;
-		
-		function addItem( item:* ):void;
-		
-		function addItemAt( item:*, index:int ):void;
-		
-		function getItemIndex( item:* ):int;
-		
-		function removeItem( item:* ):Boolean;
-		
-		function removeItemAt( index:int ):*;
-		
-		function removeAll():void;
-		
-		function clearSource():void;
-		
-		function contains( item:* ):Boolean;
-		
-		function itemUpdated( item:* ):void;
-		
-		function toString():String;
-	}
+	public namespace archive_internal = "urn:xmpp:archive";
 }

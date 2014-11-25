@@ -25,6 +25,7 @@
  */
 package org.igniterealtime.xiff.core
 {
+
 	import org.igniterealtime.xiff.data.*;
 	import org.igniterealtime.xiff.data.browse.BrowseExtension;
 	import org.igniterealtime.xiff.data.disco.InfoDiscoExtension;
@@ -124,7 +125,8 @@ package org.igniterealtime.xiff.core
 			var iq:IQ = new IQ( server, IQ.TYPE_GET );
 			iq.callback = callback;
 			iq.errorCallback = errorCallback;
-			iq.addExtension( new InfoDiscoExtension( iq.xml ) );
+			var infoDiscoExtension:InfoDiscoExtension = new InfoDiscoExtension(iq.xml);
+			iq.addExtension(infoDiscoExtension );
 			_connection.send( iq );
 			return iq;
 		}

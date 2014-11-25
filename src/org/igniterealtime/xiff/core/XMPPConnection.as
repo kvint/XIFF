@@ -31,7 +31,6 @@ package org.igniterealtime.xiff.core
 
 	import org.igniterealtime.xiff.auth.*;
 	import org.igniterealtime.xiff.data.*;
-	import org.igniterealtime.xiff.data.auth.AuthExtension;
 	import org.igniterealtime.xiff.data.bind.BindExtension;
 	import org.igniterealtime.xiff.data.ping.PingExtension;
 	import org.igniterealtime.xiff.data.session.SessionExtension;
@@ -342,7 +341,6 @@ package org.igniterealtime.xiff.core
 			// are enabled in Greensock TweenLite
 
 			enableExtensions(
-				AuthExtension,
 				BindExtension,
 				SessionExtension,
 				PingExtension,
@@ -507,7 +505,7 @@ package org.igniterealtime.xiff.core
 				return;
 			}
 
-			var iq:IQ = new IQ( new EscapedJID( server ), IQ.TYPE_GET, null, sendKeepAlive_response, sendKeepAlive_error );
+			var iq:IQ = new IQ( new EscapedJID( domain ), IQ.TYPE_GET, null, sendKeepAlive_response, sendKeepAlive_error );
 			iq.addExtension( new PingExtension() );
 			send( iq );
 		}
@@ -1411,7 +1409,7 @@ package org.igniterealtime.xiff.core
 			if ( xmlData != null )
 			{
 				// Add default namespace which is not usually included in XML from the server
-				xmlData.setNamespace( XMLStanza.DEFAULT_NS );
+				//xmlData.setNamespace( XMLStanza.DEFAULT_NS );
 				xmlData.normalize();
 
 				for each (var child:XML in xmlData.children())
