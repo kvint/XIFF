@@ -60,5 +60,7 @@ package org.igniterealtime.xiff.im
 		
 		function get connection():IXMPPConnection;
 		function set connection( value:IXMPPConnection ):void;
+
+		function handlePresence(presence:IPresence):void;
 	}
 }

@@ -490,11 +490,6 @@ package org.igniterealtime.xiff.im
 
 			switch ( eventObj.type )
 			{
-				// Handle any incoming presence items
-				case PresenceEvent.PRESENCE:
-					handlePresences( eventObj.data );
-					break;
-
 				// Fetch the roster immediately after login
 				case LoginEvent.LOGIN:
 					fetchRoster();
@@ -583,65 +578,62 @@ package org.igniterealtime.xiff.im
 		 * Dispathing <code>RosterEvent</code> based on the types of the <code>Presence</code>.
 		 * @param	presenceArray	A pile of presences received at one time
 		 */
-		private function handlePresences( presenceArray:Array ):void
+		public function handlePresence( aPresence:IPresence ):void
 		{
-			for each ( var aPresence:Presence in presenceArray )
+			var type:String = aPresence.type ? aPresence.type.toLowerCase() : null;
+			var rosterEvent:RosterEvent = null;
+
+			switch ( type )
 			{
-				var type:String = aPresence.type ? aPresence.type.toLowerCase() : null;
-				var rosterEvent:RosterEvent = null;
+				case Presence.TYPE_SUBSCRIBE:
+					rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_REQUEST );
+					break;
 
-				switch ( type )
-				{
-					case Presence.TYPE_SUBSCRIBE:
-						rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_REQUEST );
+				case Presence.TYPE_UNSUBSCRIBED:
+					rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_DENIAL );
+					break;
+
+				case Presence.TYPE_UNAVAILABLE:
+					rosterEvent = new RosterEvent( RosterEvent.USER_UNAVAILABLE );
+
+					var unavailableItem:RosterItemVO = RosterItemVO.get( aPresence.from.unescaped, false );
+					if ( !unavailableItem )
+					{
 						break;
+					}
+					updateRosterItemPresence( unavailableItem, aPresence );
 
-					case Presence.TYPE_UNSUBSCRIBED:
-						rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_DENIAL );
-						break;
+					break;
 
-					case Presence.TYPE_UNAVAILABLE:
-						rosterEvent = new RosterEvent( RosterEvent.USER_UNAVAILABLE );
+				// null means available
+				default:
+					rosterEvent = new RosterEvent( RosterEvent.USER_AVAILABLE );
+					rosterEvent.data = aPresence;
 
-						var unavailableItem:RosterItemVO = RosterItemVO.get( aPresence.from.unescaped, false );
-						if ( !unavailableItem )
-						{
-							break;
-						}
-						updateRosterItemPresence( unavailableItem, aPresence );
-
-						break;
-
-					// null means available
-					default:
-						rosterEvent = new RosterEvent( RosterEvent.USER_AVAILABLE );
-						rosterEvent.data = aPresence;
-
-						// Change the item on the roster
-						var availableItem:RosterItemVO;
-						if ( aPresence.from )
-						{
-							availableItem = RosterItemVO.get( aPresence.from.unescaped, false );
-						}
-
-						if ( !availableItem )
-						{
-							break;
-						}
-						updateRosterItemPresence( availableItem, aPresence );
-
-						break;
-				}
-
-				if ( rosterEvent != null )
-				{
-					// from can sometimes not be set
+					// Change the item on the roster
+					var availableItem:RosterItemVO;
 					if ( aPresence.from )
 					{
-						rosterEvent.jid = aPresence.from.unescaped;
+						availableItem = RosterItemVO.get( aPresence.from.unescaped, false );
 					}
-					dispatchEvent( rosterEvent );
+
+					if ( !availableItem )
+					{
+						break;
+					}
+					updateRosterItemPresence( availableItem, aPresence );
+
+					break;
+			}
+
+			if ( rosterEvent != null )
+			{
+				// from can sometimes not be set
+				if ( aPresence.from )
+				{
+					rosterEvent.jid = aPresence.from.unescaped;
 				}
+				dispatchEvent( rosterEvent );
 			}
 		}
 
@@ -700,7 +692,7 @@ package org.igniterealtime.xiff.im
 		 * @param	item
 		 * @param	presence
 		 */
-		private function updateRosterItemPresence( item:IRosterItemVO, presence:Presence ):void
+		private function updateRosterItemPresence( item:IRosterItemVO, presence:IPresence ):void
 		{
 			try
 			{
@@ -766,13 +758,11 @@ package org.igniterealtime.xiff.im
 		{
 			if ( _connection != null )
 			{
-				_connection.removeEventListener( PresenceEvent.PRESENCE, handleEvent );
 				_connection.removeEventListener( LoginEvent.LOGIN, handleEvent );
 				_connection.removeEventListener( RosterExtension.NS, handleEvent );
 			}
 			
 			_connection = value;
-			_connection.addEventListener( PresenceEvent.PRESENCE, handleEvent );
 			_connection.addEventListener( LoginEvent.LOGIN, handleEvent );
 			_connection.addEventListener( RosterExtension.NS, handleEvent );
 			_connection.enableExtensions( RosterExtension );
