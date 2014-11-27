@@ -517,6 +517,7 @@ package org.igniterealtime.xiff.im
 									case RosterExtension.SUBSCRIBE_TYPE_NONE:
 										rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_REVOCATION );
 										rosterEvent.jid = jid;
+										rosterEvent.data = rosterItemVO;
 										dispatchEvent( rosterEvent );
 										break;
 
