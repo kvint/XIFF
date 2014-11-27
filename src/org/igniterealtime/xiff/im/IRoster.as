@@ -26,6 +26,7 @@
 package org.igniterealtime.xiff.im
 {
 	import org.igniterealtime.xiff.collections.ICollection;
+	import org.igniterealtime.xiff.core.AbstractJID;
 	import org.igniterealtime.xiff.core.IXMPPConnection;
 	import org.igniterealtime.xiff.core.UnescapedJID;
 	import org.igniterealtime.xiff.data.IPresence;
@@ -62,5 +63,7 @@ package org.igniterealtime.xiff.im
 		function set connection( value:IXMPPConnection ):void;
 
 		function handlePresence(presence:IPresence):void;
+
+		function isFriend(jid:AbstractJID):Boolean;
 	}
 }

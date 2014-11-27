@@ -32,6 +32,7 @@ package org.igniterealtime.xiff.im
 	import org.igniterealtime.xiff.data.*;
 	import org.igniterealtime.xiff.data.im.*;
 	import org.igniterealtime.xiff.events.*;
+	import org.igniterealtime.xiff.util.JIDUtil;
 
 	/**
 	 * Broadcast whenever someone revokes your presence subscription. This is not
@@ -767,6 +768,26 @@ package org.igniterealtime.xiff.im
 			_connection.addEventListener( LoginEvent.LOGIN, handleEvent );
 			_connection.addEventListener( RosterExtension.NS, handleEvent );
 			_connection.enableExtensions( RosterExtension );
+		}
+
+		public function isFriend(jid:AbstractJID):Boolean {
+
+			var unescapedJID:UnescapedJID = JIDUtil.unescape(jid);
+			var rosterItemVO:RosterItemVO = RosterItemVO.get(unescapedJID);
+			if(rosterItemVO == null) return false;
+			if(!contains(rosterItemVO)) return false;
+
+			switch (rosterItemVO.subscribeType){
+				case RosterExtension.SUBSCRIBE_TYPE_BOTH:
+					return true;
+				case RosterExtension.SUBSCRIBE_TYPE_FROM:
+					if(rosterItemVO.askType == RosterExtension.ASK_TYPE_SUBSCRIBE) {
+						// User asks contact to subscription
+						return true;
+					}
+			}
+
+			return false;
 		}
 	}
 }
