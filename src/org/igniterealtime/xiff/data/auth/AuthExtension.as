@@ -26,9 +26,10 @@
 package org.igniterealtime.xiff.data.auth
 {
 
+	import flash.utils.ByteArray;
+
 	import org.igniterealtime.xiff.data.*;
-	import org.igniterealtime.xiff.util.SHA1;
-	//import com.hurlant.crypto.hash.SHA1;
+	import com.hurlant.crypto.hash.SHA1;
 	
 	/**
          * XEP-0078: Non-SASL Authentication
@@ -79,15 +80,14 @@ package org.igniterealtime.xiff.data.auth
 		 */
 		public static function computeDigest( sessionID:String, password:String ):String
 		{
-			/*
 			var bytesIn:ByteArray = new ByteArray();
 			bytesIn.writeUTFBytes( sessionID + password );
 			var sha:SHA1 = new SHA1();
 			var bytesOut:ByteArray =  sha.hash( bytesIn );
 			return bytesOut.readUTFBytes( bytesOut.length );
-			*/
+
 			
-			return SHA1.calcSHA1( sessionID + password ).toLowerCase();
+			//return SHA1.calcSHA1( sessionID + password ).toLowerCase();
 		}
 	
 		/**
