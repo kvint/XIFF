@@ -6,37 +6,26 @@ package org.igniterealtime.xiff.setmanagement {
 
 	public class IndexedSetLooper extends ASetLooper{
 
-		private var _index:int = -1;
-
-		override public function get next():RSMSet {
+		override public function getNext():RSMSet {
 			var result:RSMSet = new RSMSet();
 			if(current) {
-				//TODO: handle EOF case
 				result.index = Math.min(current.firstIndex + bufferSize, current.count);
+				if(result.index == current.firstIndex) return null;
 			}
 			result.max = bufferSize;
 			return result;
 		}
 
-		override public function pin(value:RSMSet):void {
-			super.pin(value);
-			if(current == null){
-				_index = -1;
-			}else{
-				if(_index == -1)
-					_index = current.count;
 
-			}
-		}
-
-		override public function get previous():RSMSet {
+		override public function getPrevious():RSMSet {
 			var result:RSMSet = new RSMSet();
 			if(current) {
-				if(_index == 0) return null;
-				if(current.first != null && current.firstIndex == 0 && current.count <= 1) return null;
-				if(_index == -1) _index = current.count;
-				_index = Math.max(_index - bufferSize, 0)
-				result.index = _index;
+				if(current.first == null && current.count > 0) {
+					result.index = Math.max(current.count - bufferSize, 0);;
+				}else{
+					result.index = Math.max(current.firstIndex - bufferSize, 0);;
+					if(result.index == current.firstIndex) return null;
+				}
 			}
 			result.max = bufferSize;
 			return result;

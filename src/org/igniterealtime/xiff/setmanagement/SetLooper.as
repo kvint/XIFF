@@ -6,7 +6,7 @@ package org.igniterealtime.xiff.setmanagement {
 
 	public class SetLooper extends ASetLooper {
 
-		override public function get next():RSMSet {
+		override public function get getNext():RSMSet {
 			var result:RSMSet = new RSMSet();
 			if(current) {
 				result.after = current.last;
@@ -18,7 +18,7 @@ package org.igniterealtime.xiff.setmanagement {
 
 		}
 
-		override public function get previous():RSMSet {
+		override public function get getPrevious():RSMSet {
 			var result:RSMSet = new RSMSet();
 			if(current) {
 				result.before = current.first;

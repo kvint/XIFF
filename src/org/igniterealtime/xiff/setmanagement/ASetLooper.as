@@ -20,11 +20,11 @@ package org.igniterealtime.xiff.setmanagement {
 			_bufferSize = value;
 		}
 
-		public function get next():RSMSet {
+		public function getNext():RSMSet {
 			return null;
 		}
 
-		public function get previous():RSMSet {
+		public function getPrevious():RSMSet {
 			return null;
 		}
 

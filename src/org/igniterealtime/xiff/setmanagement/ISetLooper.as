@@ -9,8 +9,8 @@ package org.igniterealtime.xiff.setmanagement {
 		function get bufferSize():int;
 		function set bufferSize(value:int):void;
 
-		function get next():RSMSet;
-		function get previous():RSMSet;
+		function getNext():RSMSet;
+		function getPrevious():RSMSet;
 		function pin(value:RSMSet):void;
 		function reset():void;
 	}
