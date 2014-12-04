@@ -306,7 +306,7 @@ package org.igniterealtime.xiff.data.whiteboard
 							break;
 							
 						default:
-							trace("Unknown parameter for command: " + cmd);
+							throw new Error("Unknown parameter for command: " + cmd);
 							params.shift();
 							break;
 					}

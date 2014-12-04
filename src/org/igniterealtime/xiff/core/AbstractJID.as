@@ -78,8 +78,7 @@ package org.igniterealtime.xiff.core
 			{
 				if (!jidNodeValidator.test(inJID) || inJID.indexOf(" ") > -1 || inJID.length > BYTE_LIMIT_TOTAL)
 				{
-					trace("Invalid JID: %s", inJID);
-					throw "Invalid JID";
+					throw "Invalid JID " + inJID;
 				}
 			}
 			var separatorIndex:int = inJID.lastIndexOf("@");

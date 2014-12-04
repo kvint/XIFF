@@ -79,32 +79,25 @@ package org.igniterealtime.xiff.conference
 			{
 				case MessageEvent.MESSAGE:
 
-					try
+					var message:Message = event.data as Message;
+					var exts:Array = message.getAllExtensionsByNS( MUCUserExtension.NS );
+					if ( !exts || exts.length < 0 )
 					{
-						var message:Message = event.data as Message;
-						var exts:Array = message.getAllExtensionsByNS( MUCUserExtension.NS );
-						if ( !exts || exts.length < 0 )
-						{
-							return;
-						}
-						var muc:MUCUserExtension = exts[ 0 ];
-						if ( muc.type == MUCUserExtension.TYPE_INVITE )
-						{
-							var room:Room = new Room( _connection );
-							room.roomJID = message.from.unescaped;
-							room.password = muc.password;
-
-							var inviteEvent:InviteEvent = new InviteEvent();
-							inviteEvent.from = muc.from.unescaped;
-							inviteEvent.reason = muc.reason;
-							inviteEvent.room = room;
-							inviteEvent.data = message;
-							dispatchEvent( inviteEvent );
-						}
+						return;
 					}
-					catch ( error:Error )
+					var muc:MUCUserExtension = exts[ 0 ];
+					if ( muc.type == MUCUserExtension.TYPE_INVITE )
 					{
-						trace( error.getStackTrace());
+						var room:Room = new Room( _connection );
+						room.roomJID = message.from.unescaped;
+						room.password = muc.password;
+
+						var inviteEvent:InviteEvent = new InviteEvent();
+						inviteEvent.from = muc.from.unescaped;
+						inviteEvent.reason = muc.reason;
+						inviteEvent.room = room;
+						inviteEvent.data = message;
+						dispatchEvent( inviteEvent );
 					}
 
 					break;

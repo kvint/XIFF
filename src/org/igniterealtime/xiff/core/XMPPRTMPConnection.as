@@ -117,7 +117,7 @@ package org.igniterealtime.xiff.core
 
 		private function onAsyncError(event:AsyncErrorEvent):void
 		{
-			trace("AsyncErrorEvent: " + event);
+			throw event.error;
 		}
 
 		override protected function sendDataToServer( data:ByteArray ):void

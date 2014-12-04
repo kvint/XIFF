@@ -268,16 +268,8 @@ import org.igniterealtime.xiff.namespaces.xiff_internal;
 		 */
 		public function get htmlBody():String
 		{
-			try
-			{
-				var ext:XHTMLExtension = getAllExtensionsByNS(XHTMLExtension.NS)[0];
-				return ext.body;
-			}
-			catch (error:Error)
-			{
-				trace("Error : null trapped. Resuming.");
-			}
-			return null;
+			var ext:XHTMLExtension = getAllExtensionsByNS(XHTMLExtension.NS)[0];
+			return ext.body;
 		}
 		public function set htmlBody( value:String ):void
 		{

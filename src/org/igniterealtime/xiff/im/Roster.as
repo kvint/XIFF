@@ -240,28 +240,21 @@ package org.igniterealtime.xiff.im
 		{
 			// Clear out the old roster
 			removeAll();
-			try
+			for each ( var ext:RosterExtension in resultIQ.getAllExtensionsByNS( RosterExtension.NS ) )
 			{
-				for each ( var ext:RosterExtension in resultIQ.getAllExtensionsByNS( RosterExtension.NS ) )
+				for each ( var item:RosterItem in ext.items )
 				{
-					for each ( var item:RosterItem in ext.items )
-					{
-						var askType:String = item.askType != null ? item.askType.toLowerCase() : RosterExtension.ASK_TYPE_NONE;
-						fixJIDDomainIfNeeded(item);
-						addRosterItem( item.jid.unescaped, item.name, RosterExtension.SHOW_UNAVAILABLE,
-									   "Offline", item.groupNames, item.subscription.toLowerCase(), askType );
-					}
+					var askType:String = item.askType != null ? item.askType.toLowerCase() : RosterExtension.ASK_TYPE_NONE;
+					fixJIDDomainIfNeeded(item);
+					addRosterItem( item.jid.unescaped, item.name, RosterExtension.SHOW_UNAVAILABLE,
+								   "Offline", item.groupNames, item.subscription.toLowerCase(), askType );
 				}
+			}
 
-				// Fire Roster Loaded Event
-				var rosterEvent:RosterEvent = new RosterEvent( RosterEvent.ROSTER_LOADED,
-															   false, false );
-				dispatchEvent( rosterEvent );
-			}
-			catch ( error:Error )
-			{
-				trace( error.getStackTrace() );
-			}
+			// Fire Roster Loaded Event
+			var rosterEvent:RosterEvent = new RosterEvent( RosterEvent.ROSTER_LOADED,
+														   false, false );
+			dispatchEvent( rosterEvent );
 		}
 
 		private function fixJIDDomainIfNeeded(item:RosterItem):void {
@@ -500,77 +493,69 @@ package org.igniterealtime.xiff.im
 					break;
 
 				case RosterExtension.NS:
-					try
+					var ext:RosterExtension = ( eventObj.iq as IQ ).getAllExtensionsByNS( RosterExtension.NS )[ 0 ] as RosterExtension;
+					var items:Array = ext.items;
+					for each ( var item:RosterItem in items )
 					{
-						var ext:RosterExtension = ( eventObj.iq as IQ ).getAllExtensionsByNS( RosterExtension.NS )[ 0 ] as
-							RosterExtension;
-						var items:Array = ext.items;
-						for each ( var item:RosterItem in items )
+						var jid:UnescapedJID = item.jid.unescaped;
+						var rosterItemVO:RosterItemVO = RosterItemVO.get( jid, true );
+						var rosterEvent:RosterEvent;
+
+						if ( contains( rosterItemVO ) )
 						{
-							var jid:UnescapedJID = item.jid.unescaped;
-							var rosterItemVO:RosterItemVO = RosterItemVO.get( jid, true );
-							var rosterEvent:RosterEvent;
-
-							if ( contains( rosterItemVO ) )
+							switch ( item.subscription.toLowerCase() )
 							{
-								switch ( item.subscription.toLowerCase() )
-								{
-									case RosterExtension.SUBSCRIBE_TYPE_NONE:
-										rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_REVOCATION );
-										rosterEvent.jid = jid;
-										rosterEvent.data = rosterItemVO;
-										dispatchEvent( rosterEvent );
-										break;
+								case RosterExtension.SUBSCRIBE_TYPE_NONE:
+									rosterEvent = new RosterEvent( RosterEvent.SUBSCRIPTION_REVOCATION );
+									rosterEvent.jid = jid;
+									rosterEvent.data = rosterItemVO;
+									dispatchEvent( rosterEvent );
+									break;
 
-									case RosterExtension.SUBSCRIBE_TYPE_REMOVE:
-										rosterEvent = new RosterEvent( RosterEvent.USER_REMOVED );
-										for each ( var group:RosterGroup in getContainingGroups( rosterItemVO ) )
-										{
-											group.removeItem( rosterItemVO );
-										}
-										//should be impossible for getItemIndex to return -1, since we just looked it up
-										rosterEvent.data = removeItemAt( getItemIndex( rosterItemVO ) );;
-										rosterEvent.jid = jid;
-										dispatchEvent( rosterEvent );
-										break;
+								case RosterExtension.SUBSCRIBE_TYPE_REMOVE:
+									rosterEvent = new RosterEvent( RosterEvent.USER_REMOVED );
+									for each ( var group:RosterGroup in getContainingGroups( rosterItemVO ) )
+									{
+										group.removeItem( rosterItemVO );
+									}
+									//should be impossible for getItemIndex to return -1, since we just looked it up
+									rosterEvent.data = removeItemAt( getItemIndex( rosterItemVO ) );;
+									rosterEvent.jid = jid;
+									dispatchEvent( rosterEvent );
+									break;
 
-									default:
-										updateRosterItemSubscription( rosterItemVO,
-																	  item.subscription.toLowerCase(),
-																	  item.name,
-																	  item.groupNames );
-										break;
-								}
-							}
-							else
-							{
-								var groupNames:Array = item.groupNames;
-								var askType:String = item.askType != null ? item.askType.toLowerCase() :
-									RosterExtension.ASK_TYPE_NONE;
-
-								if ( item.subscription.toLowerCase() != RosterExtension.SUBSCRIBE_TYPE_REMOVE &&
-									item.subscription.toLowerCase() != RosterExtension.SUBSCRIBE_TYPE_NONE )
-								{
-									// Add this item to the roster if it's not there and if the subscription type is not equal to 'remove' or 'none'
-									addRosterItem( jid, item.name, RosterExtension.SHOW_UNAVAILABLE,
-												   "Offline", groupNames, item.subscription.toLowerCase(),
-												   askType );
-								}
-								else if ( ( item.subscription.toLowerCase() == RosterExtension.SUBSCRIBE_TYPE_NONE ||
-									item.subscription.toLowerCase() == RosterExtension.SUBSCRIBE_TYPE_FROM ) &&
-									item.askType == RosterExtension.ASK_TYPE_SUBSCRIBE )
-								{
-									// A contact was added to the roster, and its authorization is still pending.
-									addRosterItem( jid, item.name, RosterExtension.SHOW_PENDING,
-												   "Pending", groupNames, item.subscription.toLowerCase(),
-												   askType );
-								}
+								default:
+									updateRosterItemSubscription( rosterItemVO,
+																  item.subscription.toLowerCase(),
+																  item.name,
+																  item.groupNames );
+									break;
 							}
 						}
-					}
-					catch ( error:Error )
-					{
-						trace( error.getStackTrace() );
+						else
+						{
+							var groupNames:Array = item.groupNames;
+							var askType:String = item.askType != null ? item.askType.toLowerCase() :
+								RosterExtension.ASK_TYPE_NONE;
+
+							if ( item.subscription.toLowerCase() != RosterExtension.SUBSCRIBE_TYPE_REMOVE &&
+								item.subscription.toLowerCase() != RosterExtension.SUBSCRIBE_TYPE_NONE )
+							{
+								// Add this item to the roster if it's not there and if the subscription type is not equal to 'remove' or 'none'
+								addRosterItem( jid, item.name, RosterExtension.SHOW_UNAVAILABLE,
+											   "Offline", groupNames, item.subscription.toLowerCase(),
+											   askType );
+							}
+							else if ( ( item.subscription.toLowerCase() == RosterExtension.SUBSCRIBE_TYPE_NONE ||
+								item.subscription.toLowerCase() == RosterExtension.SUBSCRIBE_TYPE_FROM ) &&
+								item.askType == RosterExtension.ASK_TYPE_SUBSCRIBE )
+							{
+								// A contact was added to the roster, and its authorization is still pending.
+								addRosterItem( jid, item.name, RosterExtension.SHOW_PENDING,
+											   "Pending", groupNames, item.subscription.toLowerCase(),
+											   askType );
+							}
+						}
 					}
 					break;
 			}
@@ -696,32 +681,25 @@ package org.igniterealtime.xiff.im
 		 */
 		private function updateRosterItemPresence( item:IRosterItemVO, presence:IPresence ):void
 		{
-			try
+			item.status = presence.status;
+			item.show = presence.show;
+			item.priority = presence.priority;
+			if ( !presence.type )
 			{
-				item.status = presence.status;
-				item.show = presence.show;
-				item.priority = presence.priority;
-				if ( !presence.type )
-				{
-					item.online = true;
-				}
-				else if ( presence.type == Presence.TYPE_UNAVAILABLE )
-				{
-					item.online = false;
-				}
-				itemUpdated( item );
-
-				var event:RosterEvent = new RosterEvent( RosterEvent.USER_PRESENCE_UPDATED );
-				event.jid = item.jid;
-				event.data = item;
-				dispatchEvent( event );
-
-				_presenceMap[ item.jid.toString() ] = presence;
+				item.online = true;
 			}
-			catch ( error:Error )
+			else if ( presence.type == Presence.TYPE_UNAVAILABLE )
 			{
-				trace( error.getStackTrace() );
+				item.online = false;
 			}
+			itemUpdated( item );
+
+			var event:RosterEvent = new RosterEvent( RosterEvent.USER_PRESENCE_UPDATED );
+			event.jid = item.jid;
+			event.data = item;
+			dispatchEvent( event );
+
+			_presenceMap[ item.jid.toString() ] = presence;
 		}
 
 		/**
