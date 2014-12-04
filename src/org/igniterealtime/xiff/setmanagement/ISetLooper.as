@@ -12,5 +12,6 @@ package org.igniterealtime.xiff.setmanagement {
 		function get next():RSMSet;
 		function get previous():RSMSet;
 		function pin(value:RSMSet):void;
+		function reset():void;
 	}
 }

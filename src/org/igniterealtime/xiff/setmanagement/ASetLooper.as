@@ -31,5 +31,9 @@ package org.igniterealtime.xiff.setmanagement {
 		public function pin(value:RSMSet):void {
 			current = value;
 		}
+
+		public function reset():void {
+			pin(null);
+		}
 	}
 }
