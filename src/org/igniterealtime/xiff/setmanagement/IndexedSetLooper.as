@@ -6,6 +6,12 @@ package org.igniterealtime.xiff.setmanagement {
 
 	public class IndexedSetLooper extends ASetLooper{
 
+		public function IndexedSetLooper(bufferSize:int = 0) {
+			if(bufferSize > 0){
+				this.bufferSize = bufferSize;
+			}
+		}
+
 		override public function getNext():RSMSet {
 			var result:RSMSet = new RSMSet();
 			if(current) {
