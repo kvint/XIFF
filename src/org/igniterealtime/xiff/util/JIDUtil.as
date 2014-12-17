@@ -7,6 +7,13 @@ package org.igniterealtime.xiff.util {
 	import org.igniterealtime.xiff.core.UnescapedJID;
 
 	public class JIDUtil {
+
+		public static function createJID(name:String, domain:String = null):UnescapedJID {
+			var needToAddDomain:Boolean = name.indexOf("@") == -1 && domain != null;
+			name += needToAddDomain ? "@" + domain : "";
+			return new UnescapedJID(name);
+		}
+
 		public static function unescape(jid:AbstractJID):UnescapedJID {
 			var unescapedJID:UnescapedJID;
 			if(jid is UnescapedJID){
