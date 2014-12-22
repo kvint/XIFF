@@ -509,7 +509,7 @@ package org.igniterealtime.xiff.data
 		 * @see http://xmpp.org/extensions/xep-0091.html
 		 * @see http://xmpp.org/extensions/xep-0082.html
 		 */
-		protected function get delayedDelivery():Date
+		public function get delayedDelivery():Date
 		{
 			var stamp:Date;
 			var list:XMLList = xml.children().(localName() == "delay");
