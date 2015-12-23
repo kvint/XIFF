@@ -25,8 +25,6 @@
  */
 package org.igniterealtime.xiff.data
 {
-	import com.hurlant.util.asn1.parser.nulll;
-
 	/**
 	 * This is a base class for all classes that encapsulate XML stanza data. It provides
 	 * a set of methods that faciliate easy manipulation of XML data.

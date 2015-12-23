@@ -4,7 +4,7 @@
 package org.igniterealtime.xiff.setmanagement {
 	import org.igniterealtime.xiff.data.rsm.RSMSet;
 
-	public class ASetLooper implements ISetLooper{
+	public class ASetManager implements ISetManager{
 
 		private const DEFAULT_BUFFER_SIZE:int = 100;
 

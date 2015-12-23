@@ -2,11 +2,11 @@
  * Created by kvint on 04.12.14.
  */
 package {
-	import tests.TestRSM;
+	import tests.ResultSetManagement;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
-	public class TestSuite {
-		public var rsmLoop:TestRSM;
+	public class MainTestSuite {
+		public var rsmLoop:ResultSetManagement;
 	}
 }

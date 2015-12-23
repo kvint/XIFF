@@ -4,9 +4,9 @@
 package org.igniterealtime.xiff.setmanagement {
 	import org.igniterealtime.xiff.data.rsm.RSMSet;
 
-	public class IndexedSetLooper extends ASetLooper{
+	public class IndexedSetManager extends ASetManager{
 
-		public function IndexedSetLooper(bufferSize:int = 0) {
+		public function IndexedSetManager(bufferSize:int = 0) {
 			if(bufferSize > 0){
 				this.bufferSize = bufferSize;
 			}

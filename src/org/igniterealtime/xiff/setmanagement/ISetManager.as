@@ -4,7 +4,7 @@
 package org.igniterealtime.xiff.setmanagement {
 	import org.igniterealtime.xiff.data.rsm.RSMSet;
 
-	public interface ISetLooper {
+	public interface ISetManager {
 
 		function get bufferSize():int;
 		function set bufferSize(value:int):void;
